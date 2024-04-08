@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'case_project'
 ]
 
 MIDDLEWARE = [
@@ -37,7 +38,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'CaseProject.urls'
+ROOT_URLCONF = 'case_project.urls'
 
 TEMPLATES = [
     {
@@ -55,7 +56,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'CaseProject.wsgi.application'
+WSGI_APPLICATION = 'case_project.wsgi.application'
 
 
 # Database
