@@ -1,5 +1,5 @@
 from celery import shared_task
-from CaseProject.models import LocationHistory
+from case_project.models import LocationHistory
 
 @shared_task
 def process_location_data(locations):
