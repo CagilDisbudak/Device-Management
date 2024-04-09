@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException
-from case_project.models import Device, LocationHistory
+from case_project.models import Device
 from case_project.serializers import LocationHistorySerializer, DeviceSerializer
 from case_project.post_task import process_location_data
 from pydantic import BaseModel
@@ -15,17 +15,16 @@ def create_device(device_data: DeviceCreate):
     new_device = Device.objects.create(name=device_data.name)
     return {"id": new_device.id, "name": new_device.name}
 
-# @app.post("/devices/{device_id}/add_location/")
-# def add_location(device_id: int, location_data: LocationHistorySerializer):
-#     device = Device.objects.filter(id=device_id).first()
-#     if not device:
-#         raise HTTPException(status_code=404, detail="Device not found")
+@app.post("/devices/{device_id}/add_location/", response_model=None)
+def add_location(device_id: int, location_data):
+    device = Device.objects.filter(id=device_id).first()
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
 
-#     serialized_data = location_data.dict()
+    serialized_data = location_data.dict()
 
-#     process_location_data.delay([serialized_data])
+    process_location_data.delay([serialized_data])
 
-#     return {"message": "Location data added to queue"}
 
 @app.delete("/devices/{device_id}/delete/")
 def delete_device(device_id: int):
