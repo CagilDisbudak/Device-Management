@@ -2,3 +2,4 @@
 case_project/.env
 case_project/__pycache__
 
+app.log
