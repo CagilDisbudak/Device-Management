@@ -1,7 +1,6 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIRequestFactory
-from case_project.models import Device, Location
 
 class DeviceViewsTestCase(TestCase):
     def setUp(self):
