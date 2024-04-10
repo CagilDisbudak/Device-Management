@@ -14,7 +14,8 @@ def create_device(request: Request):
     if not request.body:
         return JsonResponse({"error": "Empty request body"}, status=400)
     try:
-        device_data = json.loads(str(request.body))
+        device_data_utf = request.body.decode('utf-8')
+        device_data = json.loads(device_data_utf)
         new_device = Device.objects.create(name=device_data['name'])
         logging.info(f"Created device: {new_device.id}, Name: {new_device.name}")
         return {"id": new_device.id, "name": new_device.name}
@@ -24,7 +25,8 @@ def create_device(request: Request):
 
 @app.post("/devices/{device_id}/add_location/", response_model=None)
 def add_location(request: Request, device_id: int):
-    location_data = request.json()
+    location_data_utf = request.body.decode()
+    location_data = json.loads(location_data_utf)
     device = Device.objects.filter(id=device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
