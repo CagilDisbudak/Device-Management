@@ -1,33 +1,36 @@
+import json
 import logging
-from fastapi import FastAPI, HTTPException
+from django.http import JsonResponse
+from fastapi import FastAPI, HTTPException, Request
 from case_project.models import Device
 from case_project.post_task import process_location_data
-from pydantic import BaseModel
+
 
 app = FastAPI()
 
 
-class DeviceCreate(BaseModel):
-    name: str
-
-
 @app.post("/devices/create/")
-def create_device(device_data: DeviceCreate):
-    new_device = Device.objects.create(name=device_data.name)
-    logging.info(f"Created device: {new_device.id}, Name: {new_device.name}")
-    return {"id": new_device.id, "name": new_device.name}
+def create_device(request: Request):
+    if not request.body:
+        return JsonResponse({"error": "Empty request body"}, status=400)
+    try:
+        device_data = json.loads(str(request.body))
+        new_device = Device.objects.create(name=device_data['name'])
+        logging.info(f"Created device: {new_device.id}, Name: {new_device.name}")
+        return {"id": new_device.id, "name": new_device.name}
+    except json.decoder.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
 
 
 @app.post("/devices/{device_id}/add_location/", response_model=None)
-def add_location(device_id: int, location_data):
+def add_location(request: Request, device_id: int):
+    location_data = request.json()
     device = Device.objects.filter(id=device_id).first()
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    serialized_data = location_data.dict()
-
-    process_location_data.delay([serialized_data])
-    logging.info(f"Added location for device {device_id}: {serialized_data}")
+    process_location_data.delay([location_data])
+    logging.info(f"Added location for device {device_id}: {location_data}")
 
 
 @app.delete("/devices/{device_id}/delete/")
